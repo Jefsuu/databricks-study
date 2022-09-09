@@ -319,6 +319,7 @@ dbutils.widgets.removeAll()
 # COMMAND ----------
 
 # TODO
+dbutils.fs.ls('/mnt/training/ecommerce')
 
 # COMMAND ----------
 
@@ -331,7 +332,7 @@ dbutils.widgets.removeAll()
 # COMMAND ----------
 
 # TODO
-files = dbutils.FILL_IN
+files = dbutils.fs.ls('/mnt/training/ecommerce')
 display(files)
 
 # COMMAND ----------
@@ -345,7 +346,11 @@ display(files)
 
 # COMMAND ----------
 
-# TODO
+# MAGIC 
+# MAGIC %sql
+# MAGIC CREATE TABLE IF NOT EXISTS users USING parquet OPTIONS (path "/mnt/training/ecommerce/users/users.parquet");
+# MAGIC CREATE TABLE IF NOT EXISTS sales USING parquet OPTIONS (path "/mnt/training/ecommerce/sales/sales.parquet");
+# MAGIC CREATE TABLE IF NOT EXISTS products USING parquet OPTIONS (path "/mnt/training/ecommerce/products/products.parquet");
 
 # COMMAND ----------
 
@@ -380,7 +385,8 @@ display(files)
 
 # COMMAND ----------
 
-# TODO
+# MAGIC %sql
+# MAGIC SELECT * FROM products
 
 # COMMAND ----------
 
@@ -405,7 +411,8 @@ display(files)
 
 # COMMAND ----------
 
-# TODO
+# MAGIC %sql
+# MAGIC SELECT AVG(purchase_revenue_in_usd) from sales
 
 # COMMAND ----------
 
@@ -433,7 +440,11 @@ display(files)
 
 # COMMAND ----------
 
-# TODO
+# MAGIC %sql
+# MAGIC SELECT
+# MAGIC   DISTINCT event_name
+# MAGIC FROM
+# MAGIC   events
 
 # COMMAND ----------
 

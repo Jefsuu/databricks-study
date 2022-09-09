@@ -309,7 +309,7 @@ display(eventsDF)
 # COMMAND ----------
 
 # TODO
-revenueDF = eventsDF.FILL_IN
+revenueDF = eventsDF.withColumn("revenue", eventsDF.ecommerce.purchase_revenue_in_usd)
 display(revenueDF)
 
 # COMMAND ----------
@@ -331,7 +331,7 @@ assert(expected1 == result1)
 # COMMAND ----------
 
 # TODO
-purchasesDF = revenueDF.FILL_IN
+purchasesDF = revenueDF.filter(col('revenue').isNotNull())
 display(purchasesDF)
 
 # COMMAND ----------
@@ -354,7 +354,7 @@ assert purchasesDF.filter(col("revenue").isNull()).count() == 0, "Nulls in 'reve
 # COMMAND ----------
 
 # TODO
-distinctDF = purchasesDF.FILL_IN
+distinctDF = purchasesDF.select('event_name').drop_duplicates(['event_name'])
 display(distinctDF)
 
 # COMMAND ----------
@@ -366,7 +366,7 @@ display(distinctDF)
 # COMMAND ----------
 
 # TODO
-finalDF = purchasesDF.FILL_IN
+finalDF = purchasesDF.drop('event_name')
 display(finalDF)
 
 # COMMAND ----------
@@ -388,7 +388,9 @@ assert(set(finalDF.columns) == expected_columns)
 
 # TODO
 finalDF = (eventsDF
-  .FILL_IN
+  .withColumn("revenue", eventsDF.ecommerce.purchase_revenue_in_usd)\
+           .filter(col('revenue').isNotNull())\
+           .drop('event_name')
 )
 
 display(finalDF)

@@ -226,7 +226,7 @@ def labelDayOfWeek(day: str) -> str:
 # COMMAND ----------
 
 # TODO
-labelDowUDF = FILL_IN
+labelDowUDF = udf(labelDayOfWeek)
 
 # COMMAND ----------
 
@@ -238,7 +238,7 @@ labelDowUDF = FILL_IN
 # COMMAND ----------
 
 # TODO
-finalDF = FILL_IN
+finalDF = df.withColumn("day", labelDowUDF(col("day")))
 
 display(finalDF)
 

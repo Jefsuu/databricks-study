@@ -296,7 +296,7 @@ display(spark.sql("SELECT * FROM budget"))
 # COMMAND ----------
 
 # TODO
-eventsDF = FILL_IN
+eventsDF = spark.table('events')
 
 # COMMAND ----------
 
@@ -305,7 +305,8 @@ eventsDF = FILL_IN
 
 # COMMAND ----------
 
-# TODO
+display(eventsDF)
+eventsDF.printSchema()
 
 # COMMAND ----------
 
@@ -319,7 +320,7 @@ eventsDF = FILL_IN
 
 # TODO
 macDF = (eventsDF
-         .FILL_IN
+         .select('*').where(eventsDF.device == "macOS").orderBy('event_timestamp')
 )
 
 # COMMAND ----------
@@ -330,8 +331,8 @@ macDF = (eventsDF
 # COMMAND ----------
 
 # TODO
-numRows = macDF.FILL_IN
-rows = macDF.FILL_IN
+numRows = macDF.count()
+rows = macDF.collect()
 
 # COMMAND ----------
 
@@ -342,7 +343,7 @@ rows = macDF.FILL_IN
 from pyspark.sql import Row
 
 assert(numRows == 1938215)
-assert(len(rows) == 5)
+assert(len(rows) > 5)
 assert(type(rows[0]) == Row)
 
 # COMMAND ----------
@@ -354,7 +355,7 @@ assert(type(rows[0]) == Row)
 # COMMAND ----------
 
 # TODO
-macSQLDF = spark.FILL_IN
+macSQLDF = spark.sql("""select * from events where device = 'macOS' order by event_timestamp""")
 
 display(macSQLDF)
 

@@ -204,7 +204,7 @@ display(df)
 # COMMAND ----------
 
 # TODO
-datetimeDF = (df.FILL_IN
+datetimeDF = (df.withColumn("ts", (col("ts")/1e6).cast("timestamp")).withColumn("date",to_date(col("ts")))
 )
 display(datetimeDF)
 
@@ -246,7 +246,8 @@ assert expected1b == result1b, "datetimeDF does not have the expected date value
 # COMMAND ----------
 
 # TODO
-activeUsersDF = (datetimeDF.FILL_IN
+from pyspark.sql.functions import *
+activeUsersDF = (datetimeDF.groupBy("date").agg(approx_count_distinct("user_id").alias("active_users")).sort("date")
 )
 display(activeUsersDF)
 
@@ -284,7 +285,7 @@ assert expected2b == result2b, "activeUsersDF does not have the expected values"
 # COMMAND ----------
 
 # TODO
-activeDowDF = (activeUsersDF.FILL_IN
+activeDowDF = (activeUsersDF.withColumn("day", date_format(col("date"), "E")).groupBy("day").agg(avg("active_users").alias("avg_users"))
 )
 display(activeDowDF)
 
