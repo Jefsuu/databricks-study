@@ -205,7 +205,7 @@ display(df)
 # COMMAND ----------
 
 # TODO
-timeStampString = <FILL_IN>
+timeStampString = "2022-09-11T12:47"
 df = spark.read.format("delta").option("timestampAsOf", timeStampString).load(deltaPath)
 display(df)
 
@@ -252,8 +252,8 @@ display(dbutils.fs.ls(deltaPath + "/state=CA/"))
 
 # COMMAND ----------
 
-# df = spark.read.format("delta").option("versionAsOf", 0).load(deltaPath)
-# display(df)
+df = spark.read.format("delta").option("versionAsOf", 2).load(deltaPath)
+display(df)
 
 # COMMAND ----------
 
@@ -278,7 +278,7 @@ deltaSalesPath = workingDir + "/delta-sales"
 # COMMAND ----------
 
 # TODO
-salesDF.FILL_IN
+salesDF.write.format("delta").save(deltaSalesPath)
 
 # COMMAND ----------
 
@@ -296,8 +296,13 @@ assert len(dbutils.fs.ls(deltaSalesPath)) > 0
 
 # COMMAND ----------
 
+salesDF.display()
+
+# COMMAND ----------
+
 # TODO
-updatedSalesDF = FILL_IN
+from pyspark.sql.functions import *
+updatedSalesDF = salesDF.withColumn("items", size("items"))#.withColumn("items", size(salesDF.items))
 display(updatedSalesDF)
 
 # COMMAND ----------
@@ -320,7 +325,7 @@ assert updatedSalesDF.schema[6].dataType == IntegerType()
 # COMMAND ----------
 
 # TODO
-updatedSalesDF.FILL_IN
+updatedSalesDF.write.mode("overwrite").option("overwriteSchema", True).format("delta").save(deltaSalesPath)
 
 # COMMAND ----------
 
@@ -340,11 +345,16 @@ assert spark.read.format("delta").load(deltaSalesPath).schema[6].dataType == Int
 
 # COMMAND ----------
 
-# TODO
+# MAGIC %sql
+# MAGIC -- TODO
+# MAGIC --DROP TABLE IF EXISTS sales_delta
+# MAGIC CREATE TABLE sales_delta USING DELTA LOCATION "dbfs:/user/jeferson.ribeiro@dataside.com.br/dbacademy/spark_programming/asp_4_3_delta_lake//delta-sales"
 
 # COMMAND ----------
 
-# TODO
+# MAGIC %sql
+# MAGIC --TODO
+# MAGIC DESCRIBE HISTORY sales_delta
 
 # COMMAND ----------
 
@@ -365,7 +375,7 @@ assert salesDeltaDF.schema[6].dataType == IntegerType()
 # COMMAND ----------
 
 # TODO
-oldSalesDF = FILL_IN
+oldSalesDF = spark.read.format("delta").option("versionAsOf", 0).load(deltaSalesPath)
 display(oldSalesDF)
 
 # COMMAND ----------

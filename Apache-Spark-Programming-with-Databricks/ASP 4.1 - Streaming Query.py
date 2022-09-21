@@ -50,7 +50,10 @@ df.isStreaming
 
 # COMMAND ----------
 
-from pyspark.sql.functions import col, approx_count_distinct, count
+from pyspark.sql.functions import *
+
+# COMMAND ----------
+
 
 emailTrafficDF = (df
                   .filter(col("traffic_source") == "email")
@@ -139,7 +142,7 @@ schema = "order_id BIGINT, email STRING, transaction_timestamp BIGINT, total_ite
 # COMMAND ----------
 
 # TODO
-df = (spark.FILL_IN
+df = (spark.readStream.schema(schema).option("maxFilesPerTrigger", 1).parquet(salesPath)
 )
 
 # COMMAND ----------
@@ -162,7 +165,8 @@ assert df.columns == ["order_id", "email", "transaction_timestamp", "total_item_
 # COMMAND ----------
 
 # TODO
-couponSalesDF = (df.FILL_IN
+
+couponSalesDF = (df.withColumn("items", explode("items")).filter(col("items.coupon").isNotNull())
 )
 
 # COMMAND ----------
@@ -190,8 +194,7 @@ assert "StructField(items,StructType(List(StructField(coupon" in schemaStr, "ite
 # TODO
 couponsCheckpointPath = workingDir + "/coupon-sales/checkpoint"
 couponsOutputPath = workingDir + "/coupon-sales/output"
-
-couponSalesQuery = (couponSalesDF.FILL_IN
+couponSalesQuery = (couponSalesDF.writeStream.outputMode("append").format("parquet").queryName("coupon_sales").trigger(processingTime='1 second').option("checkpointLocation", couponsCheckpointPath).start(couponsOutputPath)
 )
 
 # COMMAND ----------
@@ -200,7 +203,7 @@ couponSalesQuery = (couponSalesDF.FILL_IN
 
 # COMMAND ----------
 
-untilStreamIsReady("coupon_sales")
+#untilStreamIsReady("coupon_sales")
 assert couponSalesQuery.isActive
 assert len(dbutils.fs.ls(couponsOutputPath)) > 0
 assert len(dbutils.fs.ls(couponsCheckpointPath)) > 0
@@ -215,12 +218,12 @@ assert "coupon_sales" in couponSalesQuery.lastProgress["name"]
 # COMMAND ----------
 
 # TODO
-queryID = couponSalesQuery.FILL_IN
+queryID = couponSalesQuery.id
 
 # COMMAND ----------
 
 # TODO
-queryStatus = couponSalesQuery.FILL_IN
+queryStatus = couponSalesQuery.status
 
 # COMMAND ----------
 
@@ -239,7 +242,7 @@ assert list(queryStatus.keys()) == ["message", "isDataAvailable", "isTriggerActi
 # COMMAND ----------
 
 # TODO
-couponSalesQuery.FILL_IN
+couponSalesQuery.stop()
 
 # COMMAND ----------
 
@@ -256,6 +259,7 @@ assert not couponSalesQuery.isActive
 # COMMAND ----------
 
 # TODO
+spark.read.parquet(couponsOutputPath)
 
 # COMMAND ----------
 
