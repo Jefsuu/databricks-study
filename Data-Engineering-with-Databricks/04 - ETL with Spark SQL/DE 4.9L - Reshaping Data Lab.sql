@@ -85,11 +85,66 @@
 -- COMMAND ----------
 
 -- TODO
-CREATE OR REPLACE VIEW events_pivot
-<FILL_IN>
-("cart", "pillows", "login", "main", "careers", "guest", "faq", "down", "warranty", "finalize", 
-"register", "shipping_info", "checkout", "mattresses", "add_item", "press", "email_coupon", 
-"cc_info", "foam", "reviews", "original", "delivery", "premium")
+CREATE
+OR REPLACE VIEW events_pivot AS
+select
+  user_id as user,
+  cart,
+  pillows,
+  login,
+  main,
+  careers,
+  guest,
+  faq,
+  down,
+  warranty,
+  finalize,
+  register,
+  shipping_info,
+  checkout,
+  mattresses,
+  add_item,
+  press,
+  email_coupon,
+  cc_info,
+  foam,
+  reviews,
+  original,
+  delivery,
+  premium
+from
+  events
+ PIVOT (
+  count(event_name) For event_name IN (
+    "cart",
+    "pillows",
+    "login",
+    "main",
+    "careers",
+    "guest",
+    "faq",
+    "down",
+    "warranty",
+    "finalize",
+    "register",
+    "shipping_info",
+    "checkout",
+    "mattresses",
+    "add_item",
+    "press",
+    "email_coupon",
+    "cc_info",
+    "foam",
+    "reviews",
+    "original",
+    "delivery",
+    "premium"
+  )
+)
+
+-- COMMAND ----------
+
+select * from events_pivot
 
 -- COMMAND ----------
 
@@ -119,7 +174,7 @@ CREATE OR REPLACE VIEW events_pivot
 
 -- MAGIC %python
 -- MAGIC event_columns = ['user', 'cart', 'pillows', 'login', 'main', 'careers', 'guest', 'faq', 'down', 'warranty', 'finalize', 'register', 'shipping_info', 'checkout', 'mattresses', 'add_item', 'press', 'email_coupon', 'cc_info', 'foam', 'reviews', 'original', 'delivery', 'premium']
--- MAGIC check_table_results("events_pivot", event_columns, 204586)
+-- MAGIC check_table_results("events_pivot", event_columns, 485824)
 
 -- COMMAND ----------
 
@@ -158,8 +213,15 @@ CREATE OR REPLACE VIEW events_pivot
 -- COMMAND ----------
 
 -- TODO
-CREATE OR REPLACE VIEW clickpaths AS
-<FILL_IN>
+CREATE
+OR REPLACE VIEW clickpaths AS
+select
+  *
+from
+  events_pivot e
+  join transactions t
+  on e.user = t.user_id
+  
 
 -- COMMAND ----------
 
@@ -173,7 +235,7 @@ CREATE OR REPLACE VIEW clickpaths AS
 
 -- MAGIC %python
 -- MAGIC clickpath_columns = event_columns + ['user_id', 'order_id', 'transaction_timestamp', 'total_item_quantity', 'purchase_revenue_in_usd', 'unique_items', 'P_FOAM_K', 'M_STAN_Q', 'P_FOAM_S', 'M_PREM_Q', 'M_STAN_F', 'M_STAN_T', 'M_PREM_K', 'M_PREM_F', 'M_STAN_K', 'M_PREM_T', 'P_DOWN_S', 'P_DOWN_K']
--- MAGIC check_table_results("clickpaths", clickpath_columns, 9085)
+-- MAGIC check_table_results("clickpaths", clickpath_columns, 86712)
 
 -- COMMAND ----------
 
@@ -198,9 +260,9 @@ CREATE OR REPLACE VIEW clickpaths AS
 
 -- TODO
 CREATE OR REPLACE TABLE sales_product_flags AS
-<FILL_IN>
-EXISTS <FILL_IN>.item_name LIKE "%Mattress"
-EXISTS <FILL_IN>.item_name LIKE "%Pillow"
+select * from clickpaths
+EXISTS (select items.item_name LIKE "%Mattress"
+EXISTS items.item_name LIKE "%Pillow"
 
 -- COMMAND ----------
 
