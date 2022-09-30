@@ -230,6 +230,8 @@ F.when(F.col("heartrate") <= 0, "Negative BPM").otherwise("OK").alias("bpm_check
 # COMMAND ----------
 
 json_schema = "device_id LONG, time TIMESTAMP, heartrate DOUBLE"
+from pyspark.sql import functions as F
+
 
 deduped_df = (spark.read
                   .table("bronze")

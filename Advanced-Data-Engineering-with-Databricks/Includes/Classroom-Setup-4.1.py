@@ -7,6 +7,7 @@
 
 # COMMAND ----------
 
+DA.install_datasets()
 DA.cleanup()
 DA.init()
 
@@ -25,4 +26,8 @@ DA.process_bronze()               # Process through the bronze table
 # COMMAND ----------
 
 DA.conclude_setup()
+
+
+# COMMAND ----------
+
 

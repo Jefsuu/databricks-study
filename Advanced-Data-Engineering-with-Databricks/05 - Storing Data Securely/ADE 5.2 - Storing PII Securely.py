@@ -117,16 +117,16 @@ display(ranked_df)
 
 # COMMAND ----------
 
-# ranked_df = (spark.readStream
-#                   .table("bronze")
-#                   .filter("topic = 'user_info'")
-#                   .select(F.from_json(F.col("value").cast("string"), schema).alias("v"))
-#                   .select("v.*")
-#                   .filter(F.col("update_type").isin(["new", "update"]))
-#                   .withColumn("rank", F.rank().over(window))
-#                   .filter("rank == 1").drop("rank"))
+ranked_df = (spark.readStream
+                  .table("bronze")
+                  .filter("topic = 'user_info'")
+                  .select(F.from_json(F.col("value").cast("string"), schema).alias("v"))
+                  .select("v.*")
+                  .filter(F.col("update_type").isin(["new", "update"]))
+                  .withColumn("rank", F.rank().over(window))
+                  .filter("rank == 1").drop("rank"))
 
-# display(ranked_df)
+display(ranked_df)
 
 # COMMAND ----------
 
@@ -222,6 +222,11 @@ query.awaitTermination()
 
 # MAGIC %md
 # MAGIC The **`users`** table should only have 1 record for each unique ID.
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC select * from users
 
 # COMMAND ----------
 

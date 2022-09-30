@@ -11,11 +11,11 @@ def _install_datasets(reinstall=False):
     print(f"Your dataset directory is\n{DA.hidden.datasets}\n")
     existing = DA.paths.exists(DA.hidden.datasets)
 
-    if not reinstall and existing:
+    if not reinstall and existing: 
         print(f"Skipping install of existing dataset.")
         print()
         validate_datasets()
-        return 
+        return
 
     # Remove old versions of the previously installed datasets
     if existing:

@@ -143,7 +143,12 @@
 # MAGIC %sql
 # MAGIC -- TODO
 # MAGIC CREATE OR REPLACE VIEW user_lookup_vw AS
-# MAGIC -- FILL_IN
+# MAGIC SELECT 
+# MAGIC     CASE
+# MAGIC     WHEN is_member('ade_demo') THEN alt_id
+# MAGIC     ELSE 'REDACTED'
+# MAGIC     END AS alt_id,
+# MAGIC     device_id, mac_address, user_id
 # MAGIC FROM user_lookup
 
 # COMMAND ----------
